@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Nauka języka niemieckiego</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Nauka języka niemieckiego</h1>
+        
+        <button id="timerButton" class="timer-button">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            Tryb czasu
+        </button>
+        
+        <div id="timerDisplay" class="timer-display">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span id="timeLeft">60</span>s
+        </div>
+        
+        <div class="word-card">
+            <div class="german-word" id="germanWord">Hund</div>
+        </div>
+        
+        <div class="input-group">
+            <input type="text" id="translation" placeholder="Wpisz tłumaczenie po polsku..." autofocus>
+            <button id="checkButton">Sprawdź</button>
+            <button id="nextButton" class="hidden">Następne słowo</button>
+        </div>
+        
+        <div id="feedback" class="feedback hidden"></div>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value" id="correctCount">0</div>
+                <div class="stat-label">Poprawne</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="incorrectCount">0</div>
+                <div class="stat-label">Błędy</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="accuracy">0%</div>
+                <div class="stat-label">Dokładność</div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="timerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Tryb czasu</div>
+                <button class="close-modal">&times;</button>
+            </div>
+            <p style="margin-bottom: 20px; color: var(--text-secondary);">Wybierz czas trwania sesji w sekundach:</p>
+            <div class="time-options">
+                <div class="time-option" data-time="30">30s</div>
+                <div class="time-option selected" data-time="60">60s</div>
+                <div class="time-option" data-time="120">120s</div>
+                <div class="time-option" data-time="300">5 min</div>
+            </div>
+            <button class="start-timer-btn">Rozpocznij tryb czasu</button>
+        </div>
+    </div>
+    
+    <div id="summaryContainer" class="summary-container">
+        <div class="summary-box">
+            <div class="summary-title">Koniec czasu!</div>
+            
+            <div class="summary-stats">
+                <div class="summary-stat">
+                    <div class="summary-stat-value" id="summaryCorrect">0</div>
+                    <div class="summary-stat-label">Poprawne</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="summary-stat-value" id="summaryIncorrect">0</div>
+                    <div class="summary-stat-label">Błędy</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="summary-stat-value" id="summaryAccuracy">0%</div>
+                    <div class="summary-stat-label">Dokładność</div>
+                </div>
+            </div>
+            
+            <div class="word-speed" id="wordSpeed">0 słów/min</div>
+            
+            <div class="performance-msg" id="performanceMsg">Dobra robota!</div>
+            
+            <button class="restart-btn" id="restartButton">Spróbuj ponownie</button>
+        </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>

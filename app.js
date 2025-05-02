@@ -27,6 +27,9 @@ const vocabulary = [
     { german: "Freund", polish: "przyjaciel" }
   ];
   
+  // Eksportujemy słownik do użycia w innych modułach
+  export { vocabulary };
+  
   // Pobieranie elementów DOM
   const germanWordElement = document.getElementById('germanWord');
   const translationInput = document.getElementById('translation');
@@ -65,6 +68,46 @@ const vocabulary = [
   let timerInterval;
   let sessionStartTime;
   let wordsAttempted = 0;
+  
+  // Funkcja do tworzenia niestandardowych zdarzeń
+  function createWordAttemptEvent(germanWord, polishWord, isCorrect) {
+    return new CustomEvent('wordAttempt', {
+      detail: {
+        germanWord,
+        polishWord,
+        isCorrect,
+        correctCount,
+        incorrectCount
+      }
+    });
+  }
+
+  // Funkcja do zapisywania statystyk w localStorage
+  function saveStats() {
+    localStorage.setItem('correctCount', correctCount);
+    localStorage.setItem('incorrectCount', incorrectCount);
+  }
+
+  // Funkcja do wczytywania statystyk z localStorage
+  function loadStats() {
+    const savedCorrect = localStorage.getItem('correctCount');
+    const savedIncorrect = localStorage.getItem('incorrectCount');
+    
+    if (savedCorrect !== null) {
+      correctCount = parseInt(savedCorrect);
+      correctCountElement.textContent = correctCount;
+    }
+    
+    if (savedIncorrect !== null) {
+      incorrectCount = parseInt(savedIncorrect);
+      incorrectCountElement.textContent = incorrectCount;
+    }
+    
+    // Obliczanie dokładności
+    const totalAttempts = correctCount + incorrectCount;
+    const accuracy = totalAttempts > 0 ? Math.round((correctCount / totalAttempts) * 100) : 0;
+    accuracyElement.textContent = `${accuracy}%`;
+  }
   
   // Funkcja do losowania słowa
   function getRandomWord() {
@@ -111,6 +154,7 @@ const vocabulary = [
   function checkTranslation() {
       const userTranslation = translationInput.value.trim().toLowerCase();
       const correctTranslation = vocabulary[currentWordIndex].polish.toLowerCase();
+      const germanWord = vocabulary[currentWordIndex].german;
       
       // Zwiększenie licznika prób
       if (timerActive) {
@@ -118,12 +162,14 @@ const vocabulary = [
       }
       
       // Sprawdzenie czy tłumaczenie jest poprawne
+      let isCorrect = false;
       if (userTranslation === correctTranslation) {
           feedbackElement.textContent = "Poprawnie! 👍";
           feedbackElement.classList.remove('incorrect');
           feedbackElement.classList.add('correct');
           correctCount++;
           correctCountElement.textContent = correctCount;
+          isCorrect = true;
       } else {
           feedbackElement.textContent = `Niepoprawnie! Prawidłowa odpowiedź to: ${correctTranslation}`;
           feedbackElement.classList.remove('correct');
@@ -139,6 +185,12 @@ const vocabulary = [
       
       // Pokazanie feedbacku
       feedbackElement.classList.remove('hidden');
+      
+      // Wysłanie informacji o próbie do sidebara
+      document.dispatchEvent(createWordAttemptEvent(germanWord, correctTranslation, isCorrect));
+      
+      // Zapisanie statystyk
+      saveStats();
       
       // W trybie normalnym pokazujemy przycisk do następnego słowa
       if (!timerActive) {
@@ -198,6 +250,12 @@ const vocabulary = [
       correctCountElement.textContent = '0';
       incorrectCountElement.textContent = '0';
       accuracyElement.textContent = '0%';
+      
+      // Zapisz zresetowane statystyki
+      saveStats();
+      
+      // Powiadom sidebar o zresetowanych statystykach
+      document.dispatchEvent(createWordAttemptEvent('', '', false));
       
       // Resetuj stan interfejsu
       checkButton.disabled = false;
@@ -262,6 +320,12 @@ const vocabulary = [
       incorrectCountElement.textContent = '0';
       accuracyElement.textContent = '0%';
       
+      // Zapisz zresetowane statystyki
+      saveStats();
+      
+      // Powiadom sidebar o zresetowanych statystykach
+      document.dispatchEvent(createWordAttemptEvent('', '', false));
+      
       // Resetowanie interfejsu
       checkButton.disabled = false;
       translationInput.disabled = false;
@@ -320,5 +384,11 @@ const vocabulary = [
       }
   });
   
-  // Inicjalizacja aplikacji - wyświetlenie pierwszego słowa
-  displayNewWord();
+  // Inicjalizacja aplikacji
+  document.addEventListener('DOMContentLoaded', () => {
+    // Wczytanie zapisanych statystyk
+    loadStats();
+    
+    // Wyświetlenie pierwszego słowa
+    displayNewWord();
+  });
